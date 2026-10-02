@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YUSHI FANBASE 認証クイズ</title>
+<title>YUSHI オープンチャット認証クイズ</title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -265,15 +265,15 @@ function renderQuestion() {
     button.textContent = option;
 
     button.addEventListener("click", () => {
-      if (selectedOptions.has(index)) {
-        selectedOptions.delete(index);
-        button.classList.remove("selected");
-      } else {
-        selectedOptions.add(index);
-        button.classList.add("selected");
-      }
+      // 回答は1つだけ選択可能
+      selectedOptions.clear();
+      optionsEl.querySelectorAll(".option").forEach(btn => {
+        btn.classList.remove("selected");
+      });
 
-      nextButton.disabled = selectedOptions.size === 0;
+      selectedOptions.add(index);
+      button.classList.add("selected");
+      nextButton.disabled = false;
     });
 
     optionsEl.appendChild(button);
@@ -286,10 +286,10 @@ function arraysEqual(a, b) {
 
 nextButton.addEventListener("click", () => {
   const q = selectedQuestions[currentIndex];
-  const answer = [...selectedOptions].sort((a,b) => a-b);
-  const correct = [...q.correct].sort((a,b) => a-b);
+  const answer = [...selectedOptions][0];
 
-  if (!arraysEqual(answer, correct)) {
+  // 正解が2つある問題は、どちらを選んでも正解
+  if (!q.correct.includes(answer)) {
     showFailure();
     return;
   }
